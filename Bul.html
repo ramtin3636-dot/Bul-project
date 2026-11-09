@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bul.com - İstanbul'un Lezzet Rehberi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #2e7d32; --secondary: #c62828; --bg: #ffffff; --dark: #1e293b; --light: #f8fafc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--light); color: var(--dark); overflow-x: hidden; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .logo span { color: var(--secondary); }
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+        .btn { padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; justify-content: center; }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-primary { background: var(--secondary); color: white; }
+        .btn-primary:hover { background: #b71c1c; }
+        .hero { background: linear-gradient(rgba(46, 125, 50, 0.85), rgba(46, 125, 50, 0.95)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920') center/cover; padding: 80px 20px; text-align: center; color: white; }
+        .hero h1 { font-size: 42px; margin-bottom: 15px; font-weight: 700; }
+        .hero p { font-size: 18px; margin-bottom: 30px; opacity: 0.9; }
+        .search-container { max-width: 600px; margin: 0 auto 30px auto; background: white; padding: 8px; border-radius: 30px; display: flex; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .search-container input { border: none; padding: 10px 20px; width: 100%; border-radius: 30px; outline: none; font-size: 15px; color: var(--dark); }
+        .stats-row { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
+        .stat-item h3 { font-size: 28px; color: #f59e0b; font-weight: 700; }
+        .stat-item p { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        .main-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 450px; gap: 30px; }
+        @media (max-width: 968px) { .main-container { grid-template-columns: 1fr; } }
+        .section-title { font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .filters { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; display: flex; flex-direction: column; position: relative; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .card-img-container { width: 100%; height: 200px; position: relative; overflow: hidden; }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .card-img-container img { transform: scale(1.05); }
+        .card-tag { position: absolute; top: 15px; left: 15px; background: var(--secondary); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1; }
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card h3 { font-size: 18px; margin-bottom: 5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .distance-tag { font-size: 11px; font-weight: 600; color: var(--primary); background: rgba(46, 125, 50, 0.1); padding: 3px 8px; border-radius: 5px; white-space: nowrap; }
+        .card-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .card-actions .btn { flex: 1; padding: 8px 12px; font-size: 12px; border-radius: 15px; }
+        .meta { display: flex; justify-content: space-between; font-size: 14px; color: #64748b; margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f5f9; align-items: center; }
+        .stars { color: #f59e0b; font-weight: 600; }
+        .sidebar { display: flex; flex-direction: column; gap: 30px; }
+        #map-container { height: 400px; background: #e2e8f0; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        #map { height: 100%; width: 100%; }
+        .widget { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .widget h3 { margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 5px; font-weight: 600; }
+        .input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
+        .tips { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tip-btn { flex: 1; padding: 8px; border: 1px solid #cbd5e1; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .tip-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .result-box { background: var(--light); padding: 15px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 16px; color: var(--primary); }
+        .mod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .mod-btn { padding: 12px; border: 1px solid #e2e8f0; background: white; border-radius: 10px; cursor: pointer; text-align: left; font-size: 13px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .mod-btn:hover, .mod-btn.active { background: rgba(46, 125, 50, 0.1); border-color: var(--primary); color: var(--primary); }
+        .scanner-box { text-align: center; padding: 20px; border: 2px dashed var(--primary); border-radius: 10px; background: rgba(46, 125, 50, 0.02); }
+        .scan-history { margin-top: 15px; max-height: 120px; overflow-y: auto; text-align: left; font-size: 12px; }
+        .history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+
+        /* ── AUTH MODAL ── */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 420px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 20px; color: #64748b; }
+        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; }
+        .auth-tab { flex: 1; padding: 10px; text-align: center; font-weight: 600; font-size: 14px; cursor: pointer; color: #94a3b8; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: 0.2s; }
+        .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .auth-switch { text-align: center; margin-top: 15px; font-size: 13px; color: #64748b; }
+        .auth-switch a { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: none; }
+        .auth-switch a:hover { text-decoration: underline; }
+
+        /* ── CAMERA OVERLAY ── */
+        #camera-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        .scan-line { width: 80%; height: 4px; background: var(--secondary); position: absolute; animation: scan 2s linear infinite; box-shadow: 0 0 15px var(--secondary); }
+        @keyframes scan { 0% { top: 20%; } 50% { top: 80%; } 100% { top: 20%; } }
+        .viewfinder { width: 280px; height: 400px; border: 3px solid white; border-radius: 15px; position: relative; background: rgba(255,255,255,0.1); }
+
+        /* ── LOADING SPINNER for cards ── */
+        .loading-msg { text-align: center; padding: 40px; color: #64748b; font-size: 15px; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">Bul<span>.com</span></a>
+        <div class="nav-actions">
+            <button class="btn btn-outline" id="lang-btn" onclick="toggleLanguage()">EN</button>
+            <button class="btn btn-primary" id="auth-btn" onclick="openAuthModal()">
+                <i class="fa-solid fa-user"></i> <span id="txt-register-btn">Kaydol</span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1 id="txt-hero-title">İstanbul'un En İyi Lezzetlerini Keşfet</h1>
+        <p id="txt-hero-sub">Restoran, kafe ve barları konumuna göre bul, kampanyaları kaçırma, puan topla.</p>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Mekan, mutfak veya ilçe ara...">
+            <button class="btn btn-primary" onclick="searchAndFocusMap()"><span id="txt-geo-btn">Ara</span></button>
+        </div>
+        <div class="stats-row">
+            <div class="stat-item"><h3>2.400+</h3><p>Mekan</p></div>
+            <div class="stat-item"><h3>39</h3><p>İlçe</p></div>
+            <div class="stat-item"><h3>120+</h3><p>Kampanya</p></div>
+        </div>
+    </section>
+
+    <div class="main-container">
+        <main>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title" style="margin-bottom:0;">
+                    <i class="fa-solid fa-fire" style="color:var(--secondary)"></i>
+                    <span id="txt-sec-campaigns">Kampanyalar & Mekanlar</span>
+                </h2>
+                <button class="btn btn-outline" style="padding: 6px 15px; font-size: 13px; border-radius: 20px;" onclick="geolocateUser()">
+                    <i class="fa-solid fa-location-crosshairs"></i> Canlı Konumumu Kullan
+                </button>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterMekan('all', this)" id="txt-f-all">Tümü</button>
+                <button class="filter-btn" onclick="filterMekan('Restoran', this)" id="txt-f-rest">Restoranlar</button>
+                <button class="filter-btn" onclick="filterMekan('Kafe', this)" id="txt-f-cafe">Kafeler</button>
+            </div>
+            <div class="grid" id="mekan-grid">
+                <div class="loading-msg"><i class="fa-solid fa-spinner fa-spin"></i> Mekanlar yükleniyor...</div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div id="map-container"><div id="map"></div></div>
+            <div class="widget">
+                <h3 id="txt-widget-mod"><i class="fa-solid fa-wand-magic-sparkles"></i> Moduna Göre Mekan Öner</h3>
+                <div class="mod-grid">
+                    <button class="mod-btn" onclick="selectMod('Sessiz', this)"><i class="fa-solid fa-coffee"></i> <span>Sessiz Kafe</span></button>
+                    <button class="mod-btn" onclick="selectMod('Romantik', this)"><i class="fa-solid fa-heart"></i> <span>Romantik Akşam</span></button>
+                    <button class="mod-btn" onclick="selectMod('Hızlı', this)"><i class="fa-solid fa-bolt"></i> <span>Hızlı & Ucuz</span></button>
+                    <button class="mod-btn" onclick="selectMod('Manzara', this)"><i class="fa-solid fa-cloud-sun"></i> <span>Manzaralı</span></button>
+                </div>
+            </div>
+            <div class="widget">
+                <h3 id="txt-widget-receipt"><i class="fa-solid fa-camera"></i> Fiş Okut & Puan Kazan</h3>
+                <div class="scanner-box">
+                    <p id="txt-scan-desc" style="font-size:14px; margin-bottom:15px; color:#64748b;">Gittiğin mekandaki adisyon veya fişin fotoğrafını çek, anında sadakat puanı kazan!</p>
+                    <button class="btn btn-primary" style="background: var(--primary);" onclick="startReceiptScan()">
+                        <i class="fa-solid fa-qrcode"></i> <span id="txt-scan-btn">Fişi Kamerayla Okut</span>
+                    </button>
+                    <div class="scan-history" id="scan-history-list"></div>
+                </div>
+            </div>
+            <div class="widget">
+                <h3 id="txt-widget-split"><i class="fa-solid fa-calculator"></i> Alman Usulü Hesap Bölüşme</h3>
+                <div class="input-group">
+                    <label id="txt-lbl-total">Toplam Tutar (TL)</label>
+                    <input type="number" id="bill-total" placeholder="Örn: 1200" oninput="calculateSplit()">
+                </div>
+                <div class="input-group">
+                    <label id="txt-lbl-people">Kişi Sayısı</label>
+                    <input type="number" id="bill-people" value="2" min="1" oninput="calculateSplit()">
+                </div>
+                <label id="txt-lbl-tip" style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Bahşiş Oranı</label>
+                <div class="tips">
+                    <button class="tip-btn active" onclick="setTip(0, this)">%0</button>
+                    <button class="tip-btn" onclick="setTip(10, this)">%10</button>
+                    <button class="tip-btn" onclick="setTip(15, this)">%15</button>
+                </div>
+                <div class="result-box" id="split-result">Kişi Başı: 0.00 TL</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         AUTH MODAL — Login + Register with tab switching
+    ════════════════════════════════════════════════════ -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">×</span>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Giriş Yap</div>
+                <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Kaydol</div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="auth-form active" id="form-login">
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="login-email" placeholder="ornek@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" id="login-pass" placeholder="••••••">
+                </div>
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="handleLogin()">
+                    Giriş Yap
+                </button>
+                <div class="auth-switch">
+                    Hesabınız yok mu? <a onclick="switchAuthTab('register')">Kaydolun</a>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form" id="form-register">
+                <div class="input-group">
+                    <label id="txt-lbl-name">Ad Soyad</label>
+                    <input type="text" id="auth-name" placeholder="Ad Soyad">
+                </div>
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="auth-email" placeholder="ornek@email.com">
+                </div>
+                <div class="input-group">
+                    <label id="txt-lbl-pass">Şifre</label>
+                    <input type="password" id="auth-pass" placeholder="••••••" minlength="6">
+                </div>
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="handleRegister()">
+                    <span id="txt-modal-submit">Kaydı Tamamla</span>
+                </button>
+                <div class="auth-switch">
+                    Zaten hesabınız var mı? <a onclick="switchAuthTab('login')">Giriş Yapın</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Overlay -->
+    <div id="camera-overlay">
+        <h2 id="txt-cam-status">Fişi Hizalayın (Simüle Ediliyor)</h2>
+        <p style="margin-bottom: 20px; opacity:0.7;" id="txt-cam-sub">Lütfen adisyonu çerçeve içine getirin...</p>
+        <div class="viewfinder"><div class="scan-line"></div></div>
+        <button class="btn btn-primary" style="margin-top:30px; background:#c62828;" onclick="cancelScan()">İptal Et</button>
+    </div>
+
+    <script>
+    /* ══════════════════════════════════════════════════
+       LANGUAGE STRINGS
+    ══════════════════════════════════════════════════ */
+    const languages = {
+        tr: {
+            heroTitle: "İstanbul'un En İyi Lezzetlerini Keşfet",
+            heroSub: "Restoran, kafe ve barları konumuna göre bul, kampanyaları kaçırma, puan topla.",
+            geoBtn: "Ara", secCampaigns: "Kampanyalar & Mekanlar", fAll: "Tümü", fRest: "Restoranlar", fCafe: "Kafeler",
+            wMod: "Moduna Göre Mekan Öner", wReceipt: "Fiş Okut & Puan Kazan", wSplit: "Alman Usulü Hesap Bölüşme",
+            scanDesc: "Gittiğin mekandaki adisyon veya fişin fotoğrafını çek, anında sadakat puanı kazan!",
+            scanBtn: "Fişi Kamerayla Okut", lblTotal: "Toplam Tutar (TL)", lblPeople: "Kişi Sayısı", lblTip: "Bahşiş Oranı",
+            lblRegisterBtn: "Kaydol", lblName: "Ad Soyad", lblPass: "Şifre", mSubmit: "Kaydı Tamamla",
+            camStatus: "Fişi Hizalayın (Simüle Ediliyor)", camSub: "Lütfen adisyonu çerçeve içine getirin...",
+            splitRes: "Kişi Başı", menuBtn: "Menüyü Gör", mapBtn: "Haritada Gör", loading: "Mekanlar yükleniyor..."
+        },
+        en: {
+            heroTitle: "Discover Best Flavors of Istanbul",
+            heroSub: "Find restaurants, cafes and bars nearby, grab deals, earn loyalty points.",
+            geoBtn: "Search", secCampaigns: "Deals & Venues", fAll: "All", fRest: "Restaurants", fCafe: "Cafes",
+            wMod: "Recommend by Mood", wReceipt: "Scan Receipt & Earn", wSplit: "Split the Bill",
+            scanDesc: "Take a photo of your receipt at the venue, instantly earn loyalty points!",
+            scanBtn: "Scan via Camera", lblTotal: "Total Amount (TRY)", lblPeople: "Number of People", lblTip: "Tip Rate",
+            lblRegisterBtn: "Sign Up", lblName: "Full Name", lblPass: "Password", mSubmit: "Complete Sign Up",
+            camStatus: "Align Receipt (Simulated)", camSub: "Please fit the invoice inside the frame...",
+            splitRes: "Per Person", menuBtn: "View Menu", mapBtn: "Show on Map", loading: "Loading venues..."
+        }
+    };
+
+    /* ══════════════════════════════════════════════════
+       STATE
+    ══════════════════════════════════════════════════ */
+    let currentLang = 'tr';
+    let userPoints   = 0;
+    let activeTip    = 0;
+    let map          = null;
+    let service      = null;   // PlacesService — created inside initMap
+    let userMarker   = null;
+    let markers      = [];
+    let mekanlar     = [];     // populated from static data + Places API results
+    let currentFilter = 'all';
+
+    /* ══════════════════════════════════════════════════
+       STATIC SEED DATA (shown before GPS / API results)
+    ══════════════════════════════════════════════════ */
+    const staticMekanlar = [
+        { id: 1, name: "Beşiktaş Kahve Lab",       type: "Kafe",    lat: 41.0428, lng: 29.0074, rating: 4.7, reviews: 312,  campaign: "%20 GetirYemek İndirimi",            mod: "Sessiz",   price: "₺₺",  img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=600",  placeId: null },
+        { id: 2, name: "Kadıköy Boğaz Et Lokantası",type: "Restoran",lat: 40.9910, lng: 29.0270, rating: 4.9, reviews: 850,  campaign: "TripAdvisor Özel Menü",              mod: "Romantik", price: "₺₺₺", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600", placeId: null },
+        { id: 3, name: "Eminönü Tarihi Lezzet Evi", type: "Restoran",lat: 41.0165, lng: 28.9707, rating: 4.3, reviews: 1205, campaign: "Yemeksepeti 2 Al 1 Öde",             mod: "Hızlı",    price: "₺",   img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=600",  placeId: null },
+        { id: 4, name: "Beyoğlu Teras Lounge",      type: "Kafe",    lat: 41.0370, lng: 28.9764, rating: 4.6, reviews: 540,  campaign: "Kahve Yanı İkram Pasta",             mod: "Manzara",  price: "₺₺",  img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=600",  placeId: null },
+        { id: 5, name: "Sarıyer Balıkçısı",         type: "Restoran",lat: 41.1654, lng: 29.0520, rating: 4.8, reviews: 290,  campaign: "%15 İndirimli Gurme Menü",           mod: "Manzara",  price: "₺₺₺", img: "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=600",  placeId: null },
+        { id: 6, name: "Büyükçekmece Sahil Kafe",   type: "Kafe",    lat: 40.9995, lng: 28.5670, rating: 4.4, reviews: 185,  campaign: "Öğrencilere Seçili Kahveler %30",   mod: "Sessiz",   price: "₺₺",  img: "https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=600", placeId: null }
+    ];
+
+    /* ══════════════════════════════════════════════════
+       GOOGLE MAPS INIT  (called by API callback)
+    ══════════════════════════════════════════════════ */
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 11,
+            center: { lat: 41.0082, lng: 28.9784 }
+        });
+
+        // PlacesService requires a live map instance
+        service = new google.maps.places.PlacesService(map);
+
+        // Load static seed data first so the page isn't empty
+        mekanlar = staticMekanlar.slice();
+        renderCards(mekanlar);
+        pinStaticMarkers();
+    }
+
+    /* Pin the static/seed venues on the map */
+    function pinStaticMarkers() {
+        clearMarkers();
+        const bounds = new google.maps.LatLngBounds();
+        mekanlar.forEach(m => {
+            const pos = { lat: m.lat, lng: m.lng };
+            const marker = createMarker(m);
+            markers.push(marker);
+            bounds.extend(pos);
+        });
+        if (!bounds.isEmpty()) map.fitBounds(bounds);
+    }
+
+    /* Create a single marker + InfoWindow for a venue object */
+    function createMarker(m) {
+        const pos     = { lat: m.lat, lng: m.lng };
+        const marker  = new google.maps.Marker({ position: pos, map: map, title: m.name });
+        const menuUrl = buildMenuUrl(m);
+        const iw      = new google.maps.InfoWindow({
+            content: `<div style="font-family:sans-serif;max-width:200px;">
+                        <b>${m.name}</b><br>
+                        <span style="color:#c62828;font-size:12px;">${m.campaign || ''}</span><br><br>
+                        <a href="${menuUrl}" target="_blank" rel="noopener"
+                           style="color:#2e7d32;font-weight:600;text-decoration:none;">
+                           <i class="fa-solid fa-book-open"></i> Menüyü Gör
+                        </a>
+                      </div>`
+        });
+        marker.addListener("click", () => iw.open(map, marker));
+        return marker;
+    }
+
+    /* Clear all existing markers from the map */
+    function clearMarkers() {
+        markers.forEach(mk => mk.setMap(null));
+        markers = [];
+    }
+
+    /* ══════════════════════════════════════════════════
+       BUILD A WORKING MENU / PROFILE URL
+       Priority: website → Google Maps place URL
+    ══════════════════════════════════════════════════ */
+    function buildMenuUrl(m) {
+        if (m.website)  return m.website;
+        if (m.placeId)  return `https://www.google.com/maps/place/?q=place_id:${m.placeId}`;
+        // Fallback: Google Maps search by name + coordinates
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.name)}&query_place_id=${m.placeId || ''}`;
+    }
+
+    /* ══════════════════════════════════════════════════
+       RENDER CARDS
+    ══════════════════════════════════════════════════ */
+    function renderCards(data) {
+        const grid = document.getElementById("mekan-grid");
+        const p    = languages[currentLang];
+        grid.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            grid.innerHTML = `<div class="loading-msg">Mekan bulunamadı.</div>`;
+            return;
+        }
+
+        data.forEach(m => {
+            const distText = (m.distance != null)
+                ? `<span class="distance-tag">${m.distance.toFixed(1)} km</span>`
+                : '';
+            const menuUrl  = buildMenuUrl(m);
+            const imgSrc   = m.img || `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600`;
+
+            grid.innerHTML += `
+                <div class="card">
+                    <span class="card-tag">${m.campaign || m.type}</span>
+                    <div class="card-img-container">
+                        <img src="${imgSrc}" alt="${m.name}" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <h3><span>${m.name}</span>${distText}</h3>
+                        <p style="font-size:14px;color:#64748b;margin-top:5px;">
+                            <i class="fa-solid fa-utensils"></i> ${m.type} • ${m.price || ''}
+                        </p>
+                        <div class="card-actions">
+                            <button class="btn btn-outline" onclick="focusOnMap(${m.lat},${m.lng})">
+                                <i class="fa-solid fa-map-location-dot"></i> ${p.mapBtn}
+                            </button>
+                            <a href="${menuUrl}" target="_blank" rel="noopener"
+                               class="btn btn-primary" style="background:var(--primary);">
+                                <i class="fa-solid fa-book-open"></i> ${p.menuBtn}
+                            </a>
+                        </div>
+                        <div class="meta">
+                            <span class="stars"><i class="fa-solid fa-star"></i> ${m.rating || '–'} ${m.reviews ? `(${m.reviews})` : ''}</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    /* ══════════════════════════════════════════════════
+       GEOLOCATION — kararlı, fitBounds + nearbySearch
+    ══════════════════════════════════════════════════ */
+    function geolocateUser() {
+        if (!navigator.geolocation) {
+            alert("Tarayıcınız konum özelliğini desteklemiyor.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const uLat = position.coords.latitude;
+                const uLng = position.coords.longitude;
+                const uPos = { lat: uLat, lng: uLng };
+
+                // Place / refresh user marker
+                if (userMarker) userMarker.setMap(null);
+                userMarker = new google.maps.Marker({
+                    position : uPos,
+                    map      : map,
+                    title    : "Siz Buradasınız",
+                    icon     : {
+                        path         : google.maps.SymbolPath.CIRCLE,
+                        scale        : 10,
+                        fillColor    : "#2e7d32",
+                        fillOpacity  : 1,
+                        strokeColor  : "#fff",
+                        strokeWeight : 2
+                    }
+                });
+
+                map.setCenter(uPos);
+                map.setZoom(13);
+
+                // Fetch nearby restaurants & cafes via Places API (radius = 3000 m)
+                fetchNearby(uPos, uLat, uLng);
+            },
+            err => {
+                console.warn("Geolocation error:", err);
+                alert("Konum alınamadı. Tarayıcı izinlerini kontrol edin veya HTTPS üzerinden açın.");
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+
+    /* Fetch nearby places from Places API then merge & render */
+    function fetchNearby(center, uLat, uLng) {
+        if (!service) {
+            alert("Harita henüz yüklenmedi, lütfen bekleyin.");
+            return;
+        }
+
+        const grid = document.getElementById("mekan-grid");
+        grid.innerHTML = `<div class="loading-msg"><i class="fa-solid fa-spinner fa-spin"></i> Yakındaki mekanlar aranıyor...</div>`;
+
+        const types   = ['restaurant', 'cafe'];
+        let   results = [];
+        let   done    = 0;
+
+        types.forEach(type => {
+            service.nearbySearch(
+                { location: center, radius: 3000, type: type },
+                (res, status) => {
+                    done++;
+                    if (status === google.maps.places.PlacesServiceStatus.OK && res) {
+                        results = results.concat(res);
+                    }
+                    if (done === types.length) {
+                        processNearbyResults(results, uLat, uLng);
+                    }
+                }
+            );
+        });
+    }
+
+    /* Convert Places API results → internal mekan format */
+    function processNearbyResults(results, uLat, uLng) {
+        clearMarkers();
+
+        // Keep user marker visible
+        if (userMarker) userMarker.setMap(map);
+
+        const bounds = new google.maps.LatLngBounds();
+        if (userMarker) bounds.extend(userMarker.getPosition());
+
+        const newMekanlar = results.map((place, idx) => {
+            const lat  = place.geometry.location.lat();
+            const lng  = place.geometry.location.lng();
+            const dist = calculateHaversine(uLat, uLng, lat, lng);
+
+            // Photo from Places API if available
+            let img = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600";
+            if (place.photos && place.photos.length > 0) {
+                try { img = place.photos[0].getUrl({ maxWidth: 600 }); } catch(e) {}
+            }
+
+            // Determine venue type
+            let type = "Restoran";
+            if (place.types && (place.types.includes('cafe') || place.types.includes('coffee_shop'))) {
+                type = "Kafe";
+            }
+
+            const m = {
+                id      : `api_${idx}`,
+                name    : place.name,
+                type    : type,
+                lat     : lat,
+                lng     : lng,
+                rating  : place.rating  || null,
+                reviews : place.user_ratings_total || null,
+                campaign: place.opening_hours && place.opening_hours.open_now ? "Şu an açık 🟢" : "Yakınınızda",
+                mod     : "Hızlı",
+                price   : place.price_level ? "₺".repeat(place.price_level) : "₺₺",
+                img     : img,
+                placeId : place.place_id,
+                website : null   // will be fetched on demand via getDetails if needed
+            };
+
+            m.distance = dist;
+
+            const marker = createMarker(m);
+            markers.push(marker);
+            bounds.extend({ lat, lng });
+
+            return m;
+        });
+
+        // Sort by distance
+        newMekanlar.sort((a, b) => a.distance - b.distance);
+        mekanlar = newMekanlar;
+
+        if (!bounds.isEmpty()) map.fitBounds(bounds);
+
+        renderCards(mekanlar);
+        document.getElementById('map-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* ══════════════════════════════════════════════════
+       SEARCH BAR — geocode and focus map
+    ══════════════════════════════════════════════════ */
+    function searchAndFocusMap() {
+        const query = document.getElementById("search-input").value.trim();
+        if (!query) return;
+
+        // Local match first
+        const localMatch = staticMekanlar.find(m =>
+            m.name.toLowerCase().includes(query.toLowerCase())
+        );
+        if (localMatch) {
+            focusOnMap(localMatch.lat, localMatch.lng);
+            renderCards([localMatch]);
+            return;
+        }
+
+        // Geocode via Places API
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: query + ", Istanbul, Turkey" }, (res, status) => {
+            if (status === "OK" && res[0]) {
+                const loc = res[0].geometry.location;
+                map.setCenter(loc);
+                map.setZoom(14);
+                new google.maps.Marker({ position: loc, map: map, title: query });
+                document.getElementById('map-container').scrollIntoView({ behavior: 'smooth' });
+                // Trigger nearbySearch around the found location
+                fetchNearby(loc, loc.lat(), loc.lng());
+            } else {
+                alert("Konum İstanbul sınırları içinde bulunamadı.");
+            }
+        });
+    }
+
+    /* ══════════════════════════════════════════════════
+       FILTER & MOD BUTTONS
+    ══════════════════════════════════════════════════ */
+    function filterMekan(type, btn) {
+        currentFilter = type;
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (type === 'all') renderCards(mekanlar);
+        else renderCards(mekanlar.filter(m => m.type === type));
+    }
+
+    function selectMod(mod, btn) {
+        document.querySelectorAll(".mod-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderCards(mekanlar.filter(m => m.mod === mod));
+    }
+
+    /* ══════════════════════════════════════════════════
+       MAP HELPERS
+    ══════════════════════════════════════════════════ */
+    function focusOnMap(lat, lng) {
+        if (!map) return;
+        map.setCenter({ lat, lng });
+        map.setZoom(16);
+        document.getElementById('map-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* ══════════════════════════════════════════════════
+       BILL SPLIT
+    ══════════════════════════════════════════════════ */
+    function setTip(val, btn) {
+        document.querySelectorAll(".tip-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeTip = val;
+        calculateSplit();
+    }
+
+    function calculateSplit() {
+        const total        = parseFloat(document.getElementById("bill-total").value) || 0;
+        const people       = Math.max(parseInt(document.getElementById("bill-people").value) || 1, 1);
+        const totalWithTip = total + (total * (activeTip / 100));
+        const perPerson    = totalWithTip / people;
+        document.getElementById("split-result").innerText =
+            `${languages[currentLang].splitRes}: ${perPerson.toFixed(2)} TL`;
+    }
+
+    /* ══════════════════════════════════════════════════
+       RECEIPT SCANNER (simulated)
+    ══════════════════════════════════════════════════ */
+    function startReceiptScan() {
+        document.getElementById("camera-overlay").style.display = 'flex';
+        setTimeout(() => {
+            document.getElementById("camera-overlay").style.display = 'none';
+            const gained = Math.floor(Math.random() * 151) + 50;
+            userPoints += gained;
+            alert(currentLang === 'tr'
+                ? `Fiş onaylandı! +${gained} BulPuan!`
+                : `Receipt verified! +${gained} BulPoints!`);
+            document.getElementById("auth-btn").innerHTML =
+                `<i class="fa-solid fa-circle-user"></i> Kullanıcı (${userPoints} P)`;
+            document.getElementById("scan-history-list").innerHTML +=
+                `<div class="history-item">
+                    <span>Fiş #${Math.floor(Math.random()*9000)+1000}</span>
+                    <span style="color:var(--primary)">+${gained} P</span>
+                 </div>`;
+        }, 3000);
+    }
+
+    function cancelScan() {
+        document.getElementById("camera-overlay").style.display = 'none';
+    }
+
+    /* ══════════════════════════════════════════════════
+       AUTH MODAL — smart Login / Register tab switching
+    ══════════════════════════════════════════════════ */
+    function openAuthModal() {
+        document.getElementById("auth-modal").style.display = 'flex';
+        // Default: show login tab
+        switchAuthTab('login');
+    }
+
+    function closeAuthModal() {
+        document.getElementById("auth-modal").style.display = 'none';
+    }
+
+    function switchAuthTab(tab) {
+        // Tab highlights
+        document.getElementById("tab-login").classList.toggle("active",    tab === 'login');
+        document.getElementById("tab-register").classList.toggle("active", tab === 'register');
+        // Form visibility
+        document.getElementById("form-login").classList.toggle("active",    tab === 'login');
+        document.getElementById("form-register").classList.toggle("active", tab === 'register');
+    }
+
+    function handleLogin() {
+        const email = document.getElementById("login-email").value.trim();
+        const pass  = document.getElementById("login-pass").value;
+        if (!email || !pass) { alert("E-posta ve şifre alanlarını doldurun."); return; }
+
+        // Simulate login success
+        const displayName = email.split("@")[0];
+        userPoints = userPoints || 50;
+        document.getElementById("auth-btn").innerHTML =
+            `<i class="fa-solid fa-circle-user"></i> ${displayName} (${userPoints} P)`;
+        closeAuthModal();
+    }
+
+    function handleRegister() {
+        const name  = document.getElementById("auth-name").value.trim();
+        const email = document.getElementById("auth-email").value.trim();
+        const pass  = document.getElementById("auth-pass").value;
+        if (!name || !email || !pass) { alert("Tüm alanları doldurun."); return; }
+        if (pass.length < 6)          { alert("Şifre en az 6 karakter olmalıdır."); return; }
+
+        // Simulate registration success
+        userPoints = 100;
+        document.getElementById("auth-btn").innerHTML =
+            `<i class="fa-solid fa-circle-user"></i> ${name} (${userPoints} P)`;
+        closeAuthModal();
+    }
+
+    /* ══════════════════════════════════════════════════
+       LANGUAGE TOGGLE
+    ══════════════════════════════════════════════════ */
+    function toggleLanguage() {
+        currentLang = currentLang === 'tr' ? 'en' : 'tr';
+        document.getElementById("lang-btn").innerText = currentLang === 'tr' ? 'EN' : 'TR';
+        const p = languages[currentLang];
+
+        document.getElementById("txt-hero-title").innerText         = p.heroTitle;
+        document.getElementById("txt-hero-sub").innerText           = p.heroSub;
+        document.getElementById("txt-geo-btn").innerText            = p.geoBtn;
+        document.getElementById("txt-sec-campaigns").innerText      = p.secCampaigns;
+        document.getElementById("txt-f-all").innerText              = p.fAll;
+        document.getElementById("txt-f-rest").innerText             = p.fRest;
+        document.getElementById("txt-f-cafe").innerText             = p.fCafe;
+        document.getElementById("search-input").placeholder         =
+            currentLang === 'tr' ? "Mekan, mutfak veya ilçe ara..." : "Search venues, cuisines or districts...";
+        document.getElementById("txt-widget-mod").innerHTML         = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${p.wMod}`;
+        document.getElementById("txt-widget-receipt").innerHTML     = `<i class="fa-solid fa-camera"></i> ${p.wReceipt}`;
+        document.getElementById("txt-widget-split").innerHTML       = `<i class="fa-solid fa-calculator"></i> ${p.wSplit}`;
+        document.getElementById("txt-scan-desc").innerText          = p.scanDesc;
+        document.getElementById("txt-scan-btn").innerText           = p.scanBtn;
+        document.getElementById("txt-lbl-total").innerText          = p.lblTotal;
+        document.getElementById("txt-lbl-people").innerText         = p.lblPeople;
+        document.getElementById("txt-lbl-tip").innerText            = p.lblTip;
+        document.getElementById("txt-modal-submit").innerText       = p.mSubmit;
+        document.getElementById("txt-lbl-name").innerText           = p.lblName;
+        document.getElementById("txt-lbl-pass").innerText           = p.lblPass;
+        document.getElementById("txt-cam-status").innerText         = p.camStatus;
+        document.getElementById("txt-cam-sub").innerText            = p.camSub;
+        document.getElementById("txt-register-btn").innerText       = p.lblRegisterBtn;
+        calculateSplit();
+        renderCards(mekanlar);
+    }
+
+    /* ══════════════════════════════════════════════════
+       HAVERSINE DISTANCE (km)
+    ══════════════════════════════════════════════════ */
+    function calculateHaversine(lat1, lon1, lat2, lon2) {
+        const R    = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a    = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                     Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+                     Math.sin(dLon/2) * Math.sin(dLon/2);
+        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    }
+
+    /* ══════════════════════════════════════════════════
+       GLOBAL EVENT LISTENERS
+    ══════════════════════════════════════════════════ */
+    document.addEventListener("DOMContentLoaded", () => {
+        calculateSplit();
+        // Search on Enter key
+        document.getElementById("search-input")
+            .addEventListener("keypress", e => { if (e.key === "Enter") searchAndFocusMap(); });
+        // Close modal on backdrop click
+        document.getElementById("auth-modal")
+            .addEventListener("click", e => { if (e.target === document.getElementById("auth-modal")) closeAuthModal(); });
+    });
+    </script>
+
+    <!-- Google Maps API — Places library required for nearbySearch -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVDTKGzh5gmAPaHd6qAqyKGxJmIsKkqmY&callback=initMap&libraries=places">
+    </script>
+</body>
+</html>
